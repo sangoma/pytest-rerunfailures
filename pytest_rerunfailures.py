@@ -70,6 +70,12 @@ def pytest_runtest_protocol(item, nextitem):
     check_options(item.session.config)
 
     for i in range(reruns + 1):  # ensure at least one run of each item
+        is_rerun = True if i > 0 else False
+        if "is_rerun" in item.funcargnames:
+            if item.funcargs is None:
+                item._initrequest()
+            item.funcargs["is_rerun"] = is_rerun
+
         item.ihook.pytest_runtest_logstart(nodeid=item.nodeid,
                                            location=item.location)
         reports = runtestprotocol(item, nextitem=nextitem, log=False)
